@@ -8,6 +8,13 @@
 //   try { /* script work */ } finally { stop(); }
 
 import { appendFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+// Anchor the default log to the helper's own directory. Since deploy.ts
+// copies heartbeat.ts alongside each bot's script, this resolves to
+// rs-sdk/bots/{name}/heartbeat.log regardless of process cwd.
+const HELPER_DIR = dirname(fileURLToPath(import.meta.url));
 
 export interface HeartbeatOpts {
     task: string;
@@ -17,7 +24,7 @@ export interface HeartbeatOpts {
 
 export function startHeartbeat(sdk: any, opts: HeartbeatOpts): () => void {
     const intervalMs = opts.intervalMs ?? 30_000;
-    const logPath = opts.logPath ?? './heartbeat.log';
+    const logPath = opts.logPath ?? join(HELPER_DIR, 'heartbeat.log');
 
     const startInv = countInventory(sdk);
     const startXp = snapshotXp(sdk);
