@@ -1,0 +1,13 @@
+{
+  "name": "rs-fleet",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "bun orchestrator/deploy.ts",
+    "status": "bun orchestrator/status.ts",
+    "promote": "bun orchestrator/promote.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
