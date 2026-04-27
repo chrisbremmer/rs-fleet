@@ -24,6 +24,19 @@ the MCP server live in `../rs-sdk` — do not modify those from here.
    They get *promoted* to `scripts/lib/` once they survive two stable
    5-min runs on two different bots.
 
+## Fleet-wide ops
+
+`fleet/goals.json` maps `botName -> { script }`. `orchestrator/fleet.ts`
+reads it and provides:
+
+- `bun orchestrator/fleet.ts deploy` — deploys every bot's assigned script
+- `bun orchestrator/fleet.ts up` — deploy + launch all bots in parallel,
+  attached, Ctrl+C to stop the fleet
+
+Missing bot dirs are skipped with a warning naming the create-bot command
+to run. Don't auto-create bots from this script — credential generation
+should remain explicit.
+
 ## Conventions
 
 - **Never** import from rs-sdk via relative path here — orchestrator code

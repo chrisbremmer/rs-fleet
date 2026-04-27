@@ -5,7 +5,8 @@
   "scripts": {
     "deploy": "bun orchestrator/deploy.ts",
     "status": "bun orchestrator/status.ts",
-    "promote": "bun orchestrator/promote.ts"
+    "promote": "bun orchestrator/promote.ts",
+    "fleet": "bun orchestrator/fleet.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

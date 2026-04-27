@@ -24,18 +24,21 @@ to `rs-sdk`, so you can pull upstream SDK updates without merge pain.
 ## Workflow
 
 ```bash
-# Set goal for a bot
-edit fleet/goals.json
-
-# Deploy a script from the library to a bot
+# Single bot:
 bun orchestrator/deploy.ts woodcutting mybot
-
-# Run the deployed script over in rs-sdk
 cd ../rs-sdk && bun bots/mybot/woodcutting.ts
 
-# Watch the fleet
+# Whole fleet (driven by fleet/goals.json):
+bun orchestrator/fleet.ts up      # deploy + launch all bots in parallel; Ctrl+C to stop the fleet
+bun orchestrator/fleet.ts deploy  # deploy only, no launch
+
+# Watch the fleet (in any pane):
 bun orchestrator/status.ts
 ```
+
+`fleet up` stays attached and streams every bot's stdout into the same
+terminal. For 2–5 bots that's the right scale; daemonization can come
+later if you start running 10+ bots.
 
 ## Promotion
 

@@ -16,13 +16,26 @@ import { dirname, join } from 'node:path';
 // rs-sdk/bots/{name}/heartbeat.log regardless of process cwd.
 const HELPER_DIR = dirname(fileURLToPath(import.meta.url));
 
+// Minimal structural types — duplicated from sdk/types.ts so this file
+// stays self-contained when copied next to a bot script. Only fields
+// the heartbeat reads are listed; the real SDK objects have far more.
+interface MinSkill { name: string; experience: number }
+interface MinInventoryItem { slot: number; name: string }
+interface MinPlayer { worldX: number; worldZ: number }
+interface MinDialog { isOpen: boolean }
+interface MinState { skills?: MinSkill[]; player?: MinPlayer | null; dialog?: MinDialog }
+export interface HeartbeatSDK {
+    getState(): MinState | null | undefined;
+    getInventory(): MinInventoryItem[];
+}
+
 export interface HeartbeatOpts {
     task: string;
     intervalMs?: number;
     logPath?: string;
 }
 
-export function startHeartbeat(sdk: any, opts: HeartbeatOpts): () => void {
+export function startHeartbeat(sdk: HeartbeatSDK, opts: HeartbeatOpts): () => void {
     const intervalMs = opts.intervalMs ?? 30_000;
     const logPath = opts.logPath ?? join(HELPER_DIR, 'heartbeat.log');
 
@@ -63,21 +76,20 @@ export function startHeartbeat(sdk: any, opts: HeartbeatOpts): () => void {
     };
 }
 
-function snapshotXp(sdk: any): Record<string, number> {
+function snapshotXp(sdk: HeartbeatSDK): Record<string, number> {
     const out: Record<string, number> = {};
     try {
-        const skills = sdk.getState?.()?.skills ?? [];
+        const skills = sdk.getState()?.skills ?? [];
         for (const s of skills) {
-            if (s?.name && typeof s.experience === 'number') out[s.name] = s.experience;
+            out[s.name] = s.experience;
         }
     } catch {}
     return out;
 }
 
-function countInventory(sdk: any): number {
+function countInventory(sdk: HeartbeatSDK): number {
     try {
-        const inv = sdk.getInventory?.() ?? [];
-        return Array.isArray(inv) ? inv.length : 0;
+        return sdk.getInventory().length;
     } catch {
         return 0;
     }
