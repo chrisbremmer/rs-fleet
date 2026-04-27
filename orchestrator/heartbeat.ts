@@ -68,7 +68,7 @@ function snapshotXp(sdk: any): Record<string, number> {
     try {
         const skills = sdk.getState?.()?.skills ?? [];
         for (const s of skills) {
-            if (s?.name && typeof s.xp === 'number') out[s.name] = s.xp;
+            if (s?.name && typeof s.experience === 'number') out[s.name] = s.experience;
         }
     } catch {}
     return out;
